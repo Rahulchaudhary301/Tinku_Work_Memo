@@ -34,7 +34,7 @@ const UserData= new mongoose.Schema({
         trim:true
       },
       Dues_Payment:{
-        type:String,
+        type:Number,
         trim:true
       },
       isDeleted:{

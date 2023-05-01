@@ -64,9 +64,7 @@ const UpdateData=async (req,res)=>{
         const a= x.Dues_Payment
         const b=Payment 
         if(a < Payment)  return res.status(400).send({ status: false, msg: "Amount is Greater then DuesAmount"  })
-        if(a ===0) {
-            req.body.Dues_Payment="Thanks"
-        }
+    
         req.body.Dues_Payment=a-b
         req.body.UpDated_Time=new Date().toLocaleTimeString()
         req.body.UpDated_Date= new Date().toLocaleDateString()
@@ -93,7 +91,7 @@ const getDATA=async (req,res)=>{
 
     try {
     
-        const result = await UserData.find({isDeleted:false} ,{sort: { Dues_Payment : 1 }})
+        const result = await UserData.find({isDeleted:false} ,{sort: {Dues_Payment : 1 }})
          
         res.status(200).send({ status: false, data: result })
 
