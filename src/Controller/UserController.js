@@ -93,7 +93,7 @@ const getDATA=async (req,res)=>{
 
     try {
     
-        const result = await UserData.find({isDeleted:false}).sort({Dues_Payment:1})
+        const result = await UserData.find({isDeleted:false} ,{sort: { Dues_Payment : 1 }})
          
         res.status(200).send({ status: false, data: result })
 
