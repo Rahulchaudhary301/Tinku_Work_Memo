@@ -1,7 +1,9 @@
 
 const UserData=require('../Model/model')
 
-console.log(process.env.ACCOUNT)
+const Auth=process.env.REACT_APP_AUT
+
+const ACC=process.env.REACT_APP_ACC
 
 
 
@@ -16,6 +18,7 @@ const CreateData=async (req,res)=>{
 
         if(!Payment && !Labour_Charge && !Owener_Name && !Worker_Name && !Vehical_Model && !Vehical_Name && !Working_in_Vehicle && !Shope_Name)  return res.status(400).send({status:false , msg:"All field is compulsary !!!"})
         if(!Shope_Name)  return res.status(400).send({status:false , msg:"Shope name is missing !!!"})
+        req.body.Shope_Name = Shope_Name.toUpperCase();
         if(!Worker_Name)  return res.status(400).send({status:false , msg:"Worker name is missing !!!"})
         if(!Vehical_Name)  return res.status(400).send({status:false , msg:"Vehical name is missing !!!"})
         if(!Vehical_Model)  return res.status(400).send({status:false , msg:"Vehicle Model is missing !!!"})
@@ -23,12 +26,29 @@ const CreateData=async (req,res)=>{
         if(!Payment)  return res.status(400).send({status:false , msg:"Payment is missing !!!"})
         if(!Working_in_Vehicle)  return res.status(400).send({status:false , msg:"Working in Vehicles is missing !!!"})
         if(!Labour_Charge)  return res.status(400).send({status:false , msg:"Labour Cahrge is missing !!!"})
+        
          req.body.Dues_Payment=(Labour_Charge) - (Payment)
 
        
          const result = await UserData.create(Data)
 
     
+         const accountSid = ACC;
+         const authToken = Auth;
+          const client = require('twilio')(accountSid, authToken);
+  
+       client.messages
+      .create({
+          body: 
+          `New Data Create successfully of shope => ${Shope_Name} ,
+  
+        Data : ${result.toString()}`,
+          from: 'whatsapp:+14155238886',
+          to: 'whatsapp:+919852675983'
+      })
+      .then(message => console.log(message.sid))
+
+
 
            res.status(201).send({ status: false, data: result })
 
@@ -72,7 +92,30 @@ const UpdateData=async (req,res)=>{
         const result = await UserData.findOneAndUpdate({_id:id},{$set:Data} ,{new:true})
          
 
-       res.status(201).send({ status: false, data: result })
+       
+
+
+         
+
+       const accountSid = ACC;
+       const authToken = Auth;
+        const client = require('twilio')(accountSid, authToken);
+
+     client.messages
+    .create({
+        body: 
+        `Payment is apdated successfully Rs ${b},
+
+      Data : ${result.toString()}`,
+        from: 'whatsapp:+14155238886',
+        to: 'whatsapp:+919852675983'
+    })
+    .then(message => console.log(message.sid))
+    //.done();
+
+
+
+    res.status(201).send({ status: false, data: result })
 
     }
 
@@ -91,9 +134,14 @@ const getDATA=async (req,res)=>{
 
     try {
     
-        const result = await UserData.find({isDeleted:false} )
+        const result = await UserData.find({isDeleted:false}).sort({ Dues_Payment:-1})
         
         res.status(200).send({ status: false, data: result })
+
+
+
+
+
 
     }
 
