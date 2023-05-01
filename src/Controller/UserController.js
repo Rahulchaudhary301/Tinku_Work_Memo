@@ -139,10 +139,6 @@ const getDATA=async (req,res)=>{
         res.status(200).send({ status: false, data: result })
 
 
-
-
-
-
     }
 
     catch (err) {
