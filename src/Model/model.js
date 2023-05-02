@@ -33,6 +33,11 @@ const UserData= new mongoose.Schema({
         type:Number,
         trim:true
       },
+     Total_Payment:{
+        type:Number,
+        trim:true
+      },
+
       Dues_Payment:{
         type:Number,
         trim:true

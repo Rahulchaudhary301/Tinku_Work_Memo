@@ -16,23 +16,26 @@ const CreateData=async (req,res)=>{
         const Data = req.body;
         const {Shope_Name,Owener_Name,Worker_Name,Vehical_Name,Vehical_Model,Working_in_Vehicle,Payment,Labour_Charge}=Data
 
-        if(!Payment && !Labour_Charge && !Owener_Name && !Worker_Name && !Vehical_Model && !Vehical_Name && !Working_in_Vehicle && !Shope_Name)  return res.status(400).send({status:false , msg:"All field is compulsary !!!"})
+        if( !Labour_Charge && !Owener_Name && !Worker_Name && !Vehical_Model && !Vehical_Name && !Working_in_Vehicle && !Shope_Name)  return res.status(400).send({status:false , msg:"All field is compulsary !!!"})
         if(!Shope_Name)  return res.status(400).send({status:false , msg:"Shope name is missing !!!"})
         req.body.Shope_Name = Shope_Name.toUpperCase();
         if(!Worker_Name)  return res.status(400).send({status:false , msg:"Worker name is missing !!!"})
         if(!Vehical_Name)  return res.status(400).send({status:false , msg:"Vehical name is missing !!!"})
         if(!Vehical_Model)  return res.status(400).send({status:false , msg:"Vehicle Model is missing !!!"})
         if(!Owener_Name)  return res.status(400).send({status:false , msg:"Owener name is missing !!!"})
-        if(!Payment)  return res.status(400).send({status:false , msg:"Payment is missing !!!"})
+       // if(!Payment)  return res.status(400).send({status:false , msg:"Payment is missing !!!"})
         if(!Working_in_Vehicle)  return res.status(400).send({status:false , msg:"Working in Vehicles is missing !!!"})
         if(!Labour_Charge)  return res.status(400).send({status:false , msg:"Labour Cahrge is missing !!!"})
         
-         req.body.Dues_Payment=(Labour_Charge) - (Payment)
+         req.body.Total_Payment=Payment
+
+         req.body.Dues_Payment=(Labour_Charge) - (req.body.Total_Payment)
 
        
          const result = await UserData.create(Data)
 
-    
+    //Whatup featurs 
+
          const accountSid = ACC;
          const authToken = Auth;
           const client = require('twilio')(accountSid, authToken);
@@ -48,13 +51,7 @@ const CreateData=async (req,res)=>{
       })
       .then(message => console.log(message.sid))
 
-
-
-           res.status(201).send({ status: false, data: result })
-
-
-
-
+  res.status(201).send({ status: false, data: result })
 
 
     }
@@ -82,20 +79,19 @@ const UpdateData=async (req,res)=>{
         const x= await UserData.findById(id)
         if(x.length==0) return res.status(400).send({ status: false, msg: "Please Enter valid ID Amount"})
         const a= x.Dues_Payment
-        const b=Payment 
         if(a < Payment)  return res.status(400).send({ status: false, msg: "Amount is Greater then DuesAmount"  })
-    
-        req.body.Dues_Payment=a-b
+        const t=x.Total_Payment
+        req.body.Total_Payment=parseInt(t)+parseInt(Payment)
+        
+        req.body.Dues_Payment=a-Payment
+       
         req.body.UpDated_Time=new Date().toLocaleTimeString()
         req.body.UpDated_Date= new Date().toLocaleDateString()
 
         const result = await UserData.findOneAndUpdate({_id:id},{$set:Data} ,{new:true})
          
 
-       
-
-
-         
+        //Whatup featurs
 
        const accountSid = ACC;
        const authToken = Auth;
@@ -104,9 +100,9 @@ const UpdateData=async (req,res)=>{
      client.messages
     .create({
         body: 
-        `Payment is apdated successfully Rs ${b},
+        `Payment is apdated successfully Rs ${Payment} ,
 
-      Data : ${result.toString()}`,
+       Data : ${result.toString()}`,
         from: 'whatsapp:+14155238886',
         to: 'whatsapp:+919852675983'
     })
@@ -130,9 +126,12 @@ const UpdateData=async (req,res)=>{
 
 
 
+
+
 const getDATA=async (req,res)=>{
 
     try {
+
     
         const result = await UserData.find({isDeleted:false}).sort({ Dues_Payment:-1})
         
