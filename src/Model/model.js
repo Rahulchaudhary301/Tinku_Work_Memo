@@ -1,4 +1,8 @@
 const mongoose=require('mongoose')
+const objectId = mongoose.Schema.Types.ObjectId;
+
+
+
 
 const UserData= new mongoose.Schema({
   Shope_Name:{
@@ -12,6 +16,12 @@ const UserData= new mongoose.Schema({
       Worker_Name:{
         type:String,
         trim:true
+      },
+
+      userId:{
+        type:objectId,
+        required:true,
+        ref:"User"
       },
       Vehical_Name:{
         type:String,
